@@ -5,7 +5,7 @@
   ```
   git clone https://github.com/hzi-bifo/hcv-mds 
   ```
-* ```Python 2``` with the following packages:
+* ```Python 3``` with the following packages:
     * **numpy**
     * **scipy**
     * **matplotlib**
