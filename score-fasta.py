@@ -1,9 +1,11 @@
 from Bio import SeqIO
 from pydpi.pypro import PyPro
 from make_representations.sequencelist_representation import SequenceKmerRep, SequenceKmerEmbRep
+from sklearn import svm, preprocessing
 import sys
 import numpy as np
 
+protein = PyPro()
 
 
 def readAAP(file):  #read AAP features from the AAP textfile
@@ -12,7 +14,7 @@ def readAAP(file):  #read AAP features from the AAP textfile
     for l in aapdata.readlines():
         aapdic[l.split()[0]] = float(l.split()[1])
     aapdata.close()
-    return aapdata
+    return aapdic
 
 
 def readAAT(file):  #read AAT features from the AAT textfile
@@ -21,12 +23,13 @@ def readAAT(file):  #read AAT features from the AAT textfile
     for l in aatdata.readlines():
         aatdic[l.split()[0][0:3]] = float(l.split()[1])
     aatdata.close()
-    return aatdata
+    return aatdic
 
 
 def aap(pep, aapdic, avg):  #return AAP features for the peptides
     feature=[]
     for a in pep:
+        print(a)
         if int(avg) == 0:
             score = []
             count = 0
@@ -140,7 +143,8 @@ def protvec(pep, k, file):
 
 
 def readseq(file):  #read the sequence from the fasta file
-    return(SeqIO.read(file, "fasta"))
+    sequence = SeqIO.read(file, "fasta")
+    return(str(sequence.seq))
 
 
 def peptides(seq):  #return peptides of length 20 from the sequence
@@ -151,21 +155,28 @@ def peptides(seq):  #return peptides of length 20 from the sequence
             pep.append(seq[i:len(seq)])
         else:
             pep.append(seq[i:i+20])
+        i = i + 20
+    print(pep)
     return pep
 
 
 def combinefeature(pep):
     aapdic = readAAP("aap-general.txt.normal")
     aatdic = readAAT("aat-general.txt.normal")
-    f.aap = np.array(aap(pep, aapdic, 1))
-    f.aat = np.array(aat(pep, aapdic, 1))
-    f.aac = np.array(AAC(pep))
-    f.kmer = np.array(kmer(pep, 4))
-    f.protvec = np.array(protvec(pep, 4, './protvec/uniref_3M.vec'))
+    f_aap = np.array(aap(pep, aapdic, 1))
+    print(f_aap)
+    f_aat = np.array(aat(pep, aatdic, 1))
+    print(f_aat)
+    f_aac = np.array(AAC(pep))
+    print(f_aac)
+    f_kmer = np.array(kmer(pep, 4))
+    print(f_kmer)
+    f_protvec = np.array(protvec(pep, 4, './protvec/uniref_3M.vec'))
+    print(f_protvec)
     return np.column_stack(f.aat,f.aac,f.kmer,f.protvec)
 
 
-def score(file, mlfile):
+def scoremodel(file, mlfile):
     sequence = readseq(file)
     pep = peptides(sequence)
     features = combinefeature(pep)
@@ -173,8 +184,9 @@ def score(file, mlfile):
     pred_prob = model.fit(features)
     return pep, pred_prob
 
+
 if __name__ == "__main__":
-    peptide_list, pred_probability = score("test.fasta", "svm-model.pickle" )
+    peptide_list, pred_probability = scoremodel("test.fasta", "svm-model.pickle" )
     print("List of predicted epitopes:")
     for i in range(len(pred_probability)):
         if pred_probability[i][1] >= 0.5:
