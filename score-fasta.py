@@ -169,11 +169,11 @@ def combinefeature(pep):
     print(f_aat)
     f_aac = np.array(AAC(pep))
     print(f_aac)
-    f_kmer = np.array(kmer(pep, 4))
+    f_kmer = np.array(kmer(pep, 4).toarray())
     print(f_kmer)
-    f_protvec = np.array(protvec(pep, 4, './protvec/uniref_3M.vec'))
+    f_protvec = np.array(protvec(pep, 4, './protvec/uniref_3M.vec').toarray())
     print(f_protvec)
-    return np.column_stack(f.aat,f.aac,f.kmer,f.protvec)
+    return np.column_stack(f_aat,f_aac,f_kmer,f_protvec)
 
 
 def scoremodel(file, mlfile):
