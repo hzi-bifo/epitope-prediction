@@ -25,7 +25,7 @@ def options():
 
 if __name__ == "__main__":
     inputfile, outputfile, model = options()
-    peptide_list, pred_probability = score-fasta.scoremodel(inputfile, model )
+    peptide_list, pred_probability = score_fasta.scoremodel(inputfile, model )
     out = open(outputfile, 'w')
     for i in range(len(pred_probability)):
         if pred_probability[i][1] >= 0.5:
