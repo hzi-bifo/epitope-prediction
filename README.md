@@ -18,3 +18,10 @@
     ```
    pip3 install -r requirements.txt 
    ```
+   
+## Usage
+ Run the main.py file with the following command.
+    ```
+    python3 main.py -i inputfile.fasta
+    ```
+
