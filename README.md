@@ -21,7 +21,10 @@
    
 ## Usage
  Run the main.py file with the following command.
+    
     ```
-    python3 main.py -i inputfile.fasta
+    python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model
     ```
+    
+   
 
