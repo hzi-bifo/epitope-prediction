@@ -105,7 +105,7 @@ def aat(pep, aatdic, avg):  #return AAT features for the peptides
     return feature
 
 
-def CTD(pep):
+def CTD(pep):  #Chain-Transition-Ditribution feature
     feature = []
     for seq in pep:
         protein.ReadProteinSequence(seq)
