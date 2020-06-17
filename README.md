@@ -17,13 +17,21 @@ EpitopeVec predicts linear b-cell epitopes. It takes a protein sequence (FASTA f
    
   If these are not installed, you can install them with ``` pip ```. 
     ```
-   pip3 install -r requirements.txt 
+   pip3 install -r requirements.txt
    ```
+   
+ * Binary file for ProtVec representation of proteins. It can be downloaded from 
    
 ## Usage
  Run the main.py file with the following command.
     
     python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model
+    
+ -i : This takes the input file with the protein sequence (in FASTA format) on which epitopes are to be predicted.
+ 
+ -o : The name of the output file. This will contain the list of peptides which are predicted as epitopes.
+ 
+ -m : Machine-learning model trained on the training set as a pickle file.
     
    
 
