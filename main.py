@@ -19,16 +19,16 @@ def options():
         outputfile = args.output
         model = args.model
     except:
-        print("Invalid arguments. See help")
+        print("Invalid parameters. See help")
         sys.exit()
     return inputfile, outputfile, model
 
 if __name__ == "__main__":
     inputfile, outputfile, model = options()
     peptide_list, pred_probability = score_fasta.scoremodel(inputfile, model )
-    out = open(outputfile, 'w')
+    out = open("./output/"+outputfile, 'w')
     for i in range(len(pred_probability)):
         if pred_probability[i][1] >= 0.5:
-            print(peptide_list[i], pred_probability[i][1], file=out)
+            print(str(peptide_list[i])+"\t"+str(pred_probability[i][1]), file=out)
     out.close()
 
