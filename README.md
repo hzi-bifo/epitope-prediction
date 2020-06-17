@@ -37,7 +37,7 @@ EpitopeVec predicts linear b-cell epitopes. It takes a protein sequence (FASTA f
   The program takes a protein sequence as input. The input file should be in **FASTA** file format and should only use the 20 aa codes.       Please put the input file in the _input_ folder. Please take a look in the _input_ folder to see an example of input fasta       file: ```example.fasta``` 
   
 ## Output
-The output file is created in the _output_ folder with the outputname provided. It is a txt file with two columns. First column is contains the amino acid sequences of the predicted peptides and second column is the predicted probability score for the likelihood of that peptide being an epitope.
+The output file is created in the _output_ folder with the outputname provided. It is a txt file with two columns. First column is the amino acid sequences of the predicted peptides and second column is the predicted probability score for the likelihood of that peptide being an epitope.
     
    
 
