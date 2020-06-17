@@ -9,21 +9,29 @@ protein = PyPro()
 
 
 def readAAP(file):  #read AAP features from the AAP textfile
-    aapdic = {}
-    aapdata = open(file, 'r')
-    for l in aapdata.readlines():
-        aapdic[l.split()[0]] = float(l.split()[1])
-    aapdata.close()
-    return aapdic
+    try:
+        aapdic = {}
+        aapdata = open(file, 'r')
+        for l in aapdata.readlines():
+            aapdic[l.split()[0]] = float(l.split()[1])
+        aapdata.close()
+        return aapdic
+    except:
+        print("Error in reading AAP feature file. Please make sure that the AAP file is correctly formatted")
+        sys.exit()
 
 
 def readAAT(file):  #read AAT features from the AAT textfile
-    aatdic = {}
-    aatdata = open(file, 'r')
-    for l in aatdata.readlines():
-        aatdic[l.split()[0][0:3]] = float(l.split()[1])
-    aatdata.close()
-    return aatdic
+    try:
+        aatdic = {}
+        aatdata = open(file, 'r')
+        for l in aatdata.readlines():
+            aatdic[l.split()[0][0:3]] = float(l.split()[1])
+        aatdata.close()
+        return aatdic
+    except:
+        print("Error in reading AAT feature file. Please make sure that the AAT file is correctly formatted")
+        sys.exit()
 
 
 def aap(pep, aapdic, avg):  #return AAP features for the peptides
@@ -105,7 +113,7 @@ def aat(pep, aatdic, avg):  #return AAT features for the peptides
     return feature
 
 
-def CTD(pep):
+def CTD(pep):  #Chain-Transition-Ditribution feature
     feature = []
     for seq in pep:
         protein.ReadProteinSequence(seq)
@@ -114,7 +122,7 @@ def CTD(pep):
     return feature
 
 
-def AAC(pep):
+def AAC(pep): # Single Amino Acid Composition feature
     feature = []
     for seq in pep:
         protein.ReadProteinSequence(seq)
@@ -123,7 +131,7 @@ def AAC(pep):
     return feature
 
 
-def DPC(pep):
+def DPC(pep): # Dipeptide Composition feature
     feature = []
     for seq in pep:
         protein.ReadProteinSequence(seq)
@@ -132,12 +140,12 @@ def DPC(pep):
     return feature
 
 
-def kmer(pep, k):
+def kmer(pep, k): # Calculate k-mer feature
     feature = SequenceKmerRep(pep, 'protein', k)
     return feature
 
 
-def protvec(pep, k, file):
+def protvec(pep, k, file): #Calculate ProtVec representation
     feature = SequenceKmerEmbRep(file, pep, 'protein', k)
     return feature
 
@@ -145,6 +153,10 @@ def protvec(pep, k, file):
 def readseq(file):  #read the sequence from the fasta file
     try:
         sequence = SeqIO.read(file, "fasta")
+        for i in sequence.seq:
+            if i in ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'] == False :
+                print("Invalid amino acid code found. Please enter sequences with only 20 aa code.")
+                sys.exit()
         return(str(sequence.seq))
     except ValueError:
         print("Please enter a valid fasta file")
@@ -164,44 +176,49 @@ def peptides(seq):  #return peptides of length 20 from the sequence
     return pep
 
 
+def readmodel(mlfile):
+    try:
+        return pickle.load(open(mlfile, 'rb'))
+    except:
+        print("Error in reading model file")
+        sys.exit()
+
+
+def predict(model, features):
+    try:
+        return model.predict_proba(features)
+    except:
+        print("Error in predicting epitopes")
+        sys.exit()
+
+
 def combinefeature(pep):
-    aapdic = readAAP("aap-general.txt.normal")
-    aatdic = readAAT("aat-general.txt.normal")
+    aapdic = readAAP("./aap/aap-general.txt.normal")
+    aatdic = readAAT(".aat/aat-general.txt.normal")
     f_aap = np.array(aap(pep, aapdic, 1))
     print(f_aap)
     f_aat = np.array(aat(pep, aatdic, 1))
     print(f_aat)
     f_aac = np.array(AAC(pep))
     print(f_aac)
-    f_kmer = np.array(kmer(pep, 4))
+    f_kmer = np.array(kmer(pep, 4).toarray())
     print(f_kmer)
-    f_protvec = np.array(protvec(pep, 3, './protvec/uniref_3m_cleaned_3mers.vec'))
+    f_protvec = np.array(protvec(pep, 4, './protvec/uniref_3M.vec').toarray())
     print(f_protvec)
-    return np.column_stack(f.aat,f.aac,f.kmer,f.protvec)
+    return np.column_stack(f_aat,f_aac,f_kmer,f_protvec)
 
 
 def scoremodel(file, mlfile):
     sequence = readseq(file)
     pep = peptides(sequence)
     features = combinefeature(pep)
-    model = pickle.load(open(mlfile, 'rb'))
-    pred_prob = model.fit(features)
-    return pep, pred_prob
+    model = readmodel(mlfile)
+    return pep, predict(model, features)
 
 
 if __name__ == "__main__":
-    peptide_list, pred_probability = scoremodel("requirements.txt", "svm-model.pickle" )
+    peptide_list, pred_probability = scoremodel("./input/example.fasta", "./model/svm-model.pickle" )
     print("List of predicted epitopes:")
     for i in range(len(pred_probability)):
         if pred_probability[i][1] >= 0.5:
             print(peptide_list[i], pred_probability[i][1])
-
-
-
-    
-
-
-
-
-
-
