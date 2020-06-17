@@ -6,7 +6,7 @@ EpitopeVec predicts linear b-cell epitopes. It takes a protein sequence (FASTA f
   ```
   git clone https://github.com/hzi-bifo/hcv-mds 
   ```
-* ```Python 3``` with the following packages:
+* ```**Python 3**``` with the following packages:
     * **numpy 1.16.4**
     * **scipy 1.4.1**
     * **matplotlib 3.1.3**
@@ -34,10 +34,10 @@ EpitopeVec predicts linear b-cell epitopes. It takes a protein sequence (FASTA f
  -m : Machine-learning model trained on the training set as a pickle file.
  
 ## Input
-  The program takes a protein sequence as input. The input file should be in FASTA file format and should only use the 20 aa codes.       Please put the input file in the ```input``` folder. Please take a look in the ```input``` folder to see an example of input fasta       file: ```example.fasta``` 
+  The program takes a protein sequence as input. The input file should be in **FASTA** file format and should only use the 20 aa codes.       Please put the input file in the __input__ folder. Please take a look in the __input__ folder to see an example of input fasta       file: ```example.fasta``` 
   
 ## Output
-The output file is created in the ```output``` folder with the outputname provided. It is a txt file with two columns. First column is contains the amino acid sequences of the predicted peptides and second column is the predicted probability score for the likelihood of that peptide being an epitope.
+The output file is created in the __output__ folder with the outputname provided. It is a txt file with two columns. First column is contains the amino acid sequences of the predicted peptides and second column is the predicted probability score for the likelihood of that peptide being an epitope.
     
    
 
