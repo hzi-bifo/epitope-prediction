@@ -6,7 +6,7 @@ EpitopeVec predicts linear b-cell epitopes. It takes a protein sequence (FASTA f
   ```
   git clone https://github.com/hzi-bifo/hcv-mds 
   ```
-* ```**Python 3**``` with the following packages:
+* **```Python 3```** with the following packages:
     * **numpy 1.16.4**
     * **scipy 1.4.1**
     * **matplotlib 3.1.3**
