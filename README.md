@@ -20,7 +20,7 @@ EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA f
    pip3 install -r requirements.txt
    ```
    
- * Binary file for ProtVec representation of proteins. It can be downloaded from  and then it should be put in the ```protvec``` folder.
+ * Binary file for ProtVec representation of proteins. It can be downloaded from https://drive.google.com/drive/folders/1Y3PgFzUwCKu7Jzn0XSwd7UaBmDkXpTBZ?usp=sharing and then it should be put in the ```protvec``` folder.
    
 ## Usage
  Run the main.py file with the following command.
