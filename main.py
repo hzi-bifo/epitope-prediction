@@ -1,6 +1,7 @@
 import sys
 import score_fasta
 import argparse
+import os
 
 def options():
     try:
@@ -10,9 +11,9 @@ def options():
         formatter_class=argparse.RawTextHelpFormatter,
         usage=("%(prog)s inputfile [-h]"
                "[-i inputfile][-m modelfile][-o outputfile]"))
-        parser.add_argument("-i", "--input", help=(" input fasta file"))
+        parser.add_argument("-i", "--input",  help=(" input fasta file"))
         parser.add_argument("-o", "--output", help=(" output file with predicitons"))
-        parser.add_argument("-m", "--model", help=(" trained machine learning model"))
+        parser.add_argument("-m", "--model", default = "svm-model.pickle", help=(" trained machine learning model"))
         args = parser.parse_args()
 
         inputfile = args.input
@@ -25,7 +26,7 @@ def options():
 
 if __name__ == "__main__":
     inputfile, outputfile, model = options()
-    peptide_list, pred_probability = score_fasta.scoremodel(inputfile, model )
+    peptide_list, pred_probability = score_fasta.scoremodel("./input/"+inputfile, "./model/"+model )
     out = open("./output/"+outputfile, 'w')
     for i in range(len(pred_probability)):
         if pred_probability[i][1] >= 0.5:

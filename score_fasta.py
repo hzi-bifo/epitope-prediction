@@ -37,7 +37,7 @@ def readAAT(file):  #read AAT features from the AAT textfile
 def aap(pep, aapdic, avg):  #return AAP features for the peptides
     feature=[]
     for a in pep:
-        print(a)
+        #print(a)
         if int(avg) == 0:
             score = []
             count = 0
@@ -154,7 +154,7 @@ def readseq(file):  #read the sequence from the fasta file
     try:
         sequence = SeqIO.read(file, "fasta")
         for i in sequence.seq:
-            print(i)
+            #print(i)
             if i in ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'] :
                 continue
             else:
@@ -191,7 +191,7 @@ def predict(model, features):
     try:
         return model.predict_proba(features)
     except:
-        print("Error in predicting epitopes")
+        print("Error in predicting epitopes.")
         sys.exit()
 
 
@@ -199,15 +199,15 @@ def combinefeature(pep):
     aapdic = readAAP("./aap/aap-general.txt.normal")
     aatdic = readAAT("./aat/aat-general.txt.normal")
     f_aap = np.array(aap(pep, aapdic, 1))
-    print(f_aap)
+    #print(f_aap)
     f_aat = np.array(aat(pep, aatdic, 1))
-    print(f_aat)
+    #print(f_aat)
     f_aac = np.array(AAC(pep))
-    print(f_aac)
+    #print(f_aac)
     f_kmer = np.array(kmer(pep, 4).X.toarray())
-    print(f_kmer)
+    #print(f_kmer)
     f_protvec = np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX)
-    print(f_protvec)
+    #print(f_protvec)
     return np.column_stack((f_aat,f_aac,f_kmer,f_protvec))
 
 
@@ -215,7 +215,7 @@ def scoremodel(file, mlfile):
     sequence = readseq(file)
     pep = peptides(sequence)
     features = combinefeature(pep)
-    print(len(features[0]))
+    #print(len(features[0]))
     model = readmodel(mlfile)
     return pep, predict(model, features)
 
