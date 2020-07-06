@@ -7,18 +7,25 @@ EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA f
   git clone https://github.com/hzi-bifo/hcv-mds 
   ```
 * **```Python 3```** with the following packages:
-    * **numpy 1.16.4**
+    * **numpy 1.17.1**
     * **scipy 1.4.1**
     * **matplotlib 3.1.3**
     * **sklearn 0.22.1**
     * **pydpi 1.0**
     * **biopython 1.71.0**
+    * **tqdm 4.15.0**
+    * **gensim 2.3.0**
     
    
   If these are not installed, you can install them with ``` pip ```. 
     ```
    pip3 install -r requirements.txt
    ```
+   
+  Additionally, **pydpi 1.0** from ```pip``` might be incompatible with **Python 3**. Please install the **pydpi** package from the provided ```pydpi.tar.gz``` file.
+    ```
+    pip3 install pydpi.tar.gz
+    ```
    
  * Binary file for ProtVec representation of proteins. It can be downloaded from https://drive.google.com/drive/folders/1Y3PgFzUwCKu7Jzn0XSwd7UaBmDkXpTBZ?usp=sharing and then it should be put in the ```protvec``` folder.
    
