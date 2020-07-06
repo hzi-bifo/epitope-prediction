@@ -20,7 +20,7 @@ EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA f
    
   If these are not installed, you can install them with ``` pip ```. 
     ```
-   pip3 install -r requirements.txt
+   pip3 install -r ./requirement/requirements.txt
    ```
    
   Additionally, **pydpi 1.0** from ```pip``` might be incompatible with **Python 3**. Please install the **pydpi** package from the provided ```pydpi.tar.gz``` file.
