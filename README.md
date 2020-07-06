@@ -1,5 +1,4 @@
 # EpitopeVec: Linear Epitope Prediction Using DeepProtein Sequence Embeddings
-EpitopeVec prediciton tool from the article by Bahai et al., in review.
 EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA format) as input and then lists the peptides (of 20 amino acids length) that can be epitopes along with their respective predicition probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, k-mer features, and distributed vector representation of proteins (ProtVec).  
 
 ## Requirements
