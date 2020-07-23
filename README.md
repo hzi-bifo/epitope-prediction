@@ -34,7 +34,7 @@ The code for training new models and results from the EpitopVec article are avai
   ```
 * Run the main.py file with the following command.
   ```    
-    python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model (the machine-learning-model has to be either general or viral)
+    python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model (general OR viral)
   ```
     
     -i : This takes the input file with the protein sequence (in FASTA format) on which epitopes are to be predicted.
