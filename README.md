@@ -36,11 +36,11 @@ The code for training new models and results from the EpitopVec article are avai
     
     python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model
     
- -i : This takes the input file with the protein sequence (in FASTA format) on which epitopes are to be predicted.
+    -i : This takes the input file with the protein sequence (in FASTA format) on which epitopes are to be predicted.
  
- -o : The name of the output file. This will contain the list of peptides which are predicted as epitopes.
+    -o : The name of the output file. This will contain the list of peptides which are predicted as epitopes.
   
- -m : Machine-learning model trained on the training set as a pickle file. Use __general__ for general predictions(default) and __viral__ for viral predictions
+    -m : Machine-learning model trained on the training set as a pickle file. Use __general__ for general predictions(default) and __viral__ for viral predictions
  
 ## Input
   The program takes a protein sequence as input. The input file should be in **FASTA** file format and should only use the 20 aa codes.       Please put the input file in the _input_ folder. Please take a look in the _input_ folder to see an example of input fasta       file: ```example.fasta``` 
