@@ -1,11 +1,9 @@
 # EpitopeVec: Linear Epitope Prediction Using DeepProtein Sequence Embeddings
-EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA format) as input and then lists the peptides (of 20 amino acids length) that can be epitopes along with their respective predicition probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, k-mer features, and distributed vector representation of proteins (ProtVec).  
+EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA format) as input and then lists the peptides (of 20 amino acids length) that can be epitopes along with their respective predicition probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, k-mer features, and distributed vector representation of proteins (ProtVec).
+The code for training new models and results from the EpitopVec article are available at https://github.com/hzi-bifo/epitope-prediction-paper  
 
 ## Requirements
-* Clone this repository:
-  ```
-  git clone https://github.com/hzi-bifo/epitope-prediction
-  ```
+
 * **```Python 3```** with the following packages:
     * **numpy 1.17.1**
     * **scipy 1.4.1**
@@ -30,7 +28,11 @@ EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA f
  * Binary file for ProtVec representation of proteins. It can be downloaded from https://drive.google.com/drive/folders/1Y3PgFzUwCKu7Jzn0XSwd7UaBmDkXpTBZ?usp=sharing and then it should be put in the ```protvec``` folder.
    
 ## Usage
- Run the main.py file with the following command.
+* Clone this repository:
+  ```
+  git clone https://github.com/hzi-bifo/epitope-prediction
+  ```
+* Run the main.py file with the following command.
     
     python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model
     
@@ -45,6 +47,3 @@ EpitopeVec predicts linear B-cell epitopes. It takes a protein sequence (FASTA f
   
 ## Output
 The output file is created in the _output_ folder with the outputname provided. It is a txt file with two columns. First column is the amino acid sequences of the predicted peptides and second column is the predicted probability score for the likelihood of that peptide being an epitope.
-    
-   
-
