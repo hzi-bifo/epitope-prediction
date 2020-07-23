@@ -33,8 +33,9 @@ The code for training new models and results from the EpitopVec article are avai
   git clone https://github.com/hzi-bifo/epitope-prediction
   ```
 * Run the main.py file with the following command.
-    
+  ```    
     python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model
+  ```
     
     -i : This takes the input file with the protein sequence (in FASTA format) on which epitopes are to be predicted.
  
