@@ -4,6 +4,7 @@ from make_representations.sequencelist_representation import SequenceKmerRep, Se
 from sklearn import svm, preprocessing
 import sys
 import numpy as np
+import os.path
 
 protein = PyPro()
 
@@ -188,11 +189,10 @@ def readmodel(mlfile):
 
 
 def predict(model, features):
-    try:
-        return model.predict_proba(features)
-    except:
+    return model.predict(features)
+    '''except:
         print("Error in predicting epitopes.")
-        sys.exit()
+        sys.exit()'''
 
 
 def combinefeature(pep):
@@ -206,8 +206,12 @@ def combinefeature(pep):
     #print(f_aac)
     f_kmer = np.array(kmer(pep, 4).X.toarray())
     #print(f_kmer)
-    f_protvec = np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX)
-    #print(f_protvec)
+    if os.path.isfile('./protvec/sp_sequences_4mers_vec.txt') == True:
+        f_protvec = np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX)
+    else:
+        print("Protvec binaries are missing. See README file.")
+        sys.exit()    
+        #print(f_protvec)
     return np.column_stack((f_aat,f_aac,f_kmer,f_protvec))
 
 
