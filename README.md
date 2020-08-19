@@ -39,7 +39,7 @@ The code for training new models and results from the EpitopVec article are avai
     
     -i : This takes the input file with the protein sequence (in FASTA format) on which epitopes are to be predicted.
  
-    -o : The name of the output directoru. This will contain the list of peptides which are predicted as epitopes.
+    -o : The name of the output directory. This will contain the list of peptides which are predicted as epitopes.
   
     -m : Machine-learning model trained on the training set as a pickle file. Use __general__ for general predictions(default) and __viral__ for viral predictions
  
