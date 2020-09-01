@@ -20,9 +20,9 @@ The code for training new models and results from the EpitopVec article are avai
    pip3 install -r ./requirement/requirements.txt
    ```
    
-  Additionally, **pydpi 1.0** from ```pip``` might be incompatible with **Python 3**. Please install the **pydpi** package from the provided ```pydpi.tar.gz``` file.
+  Additionally, **pydpi 1.0** from ```pip``` might be incompatible with **Python 3**. Please install the **pydpi** package from the provided ```requirement/pydpi.tar.gz``` file.
     ```
-    pip3 install pydpi.tar.gz
+    pip3 install ./requirement/pydpi.tar.gz
     ```
    
  * Binary file for ProtVec representation of proteins. It can be downloaded from https://drive.google.com/drive/folders/1Y3PgFzUwCKu7Jzn0XSwd7UaBmDkXpTBZ?usp=sharing and then it should be put in the ```protvec``` folder.
