@@ -85,21 +85,8 @@ class SequenceKmerEmbRep(SequenceKmerRep):
                                  norm=norm, delete_empty_col=True)
         self.model = KeyedVectors.load_word2vec_format(
             embedding_file, binary=False)
-        model = self.model
-        try:
-            k_mer_dict = FileUtility.load_obj(
-                '../config/' + str(k_mer) + "_in_model")
-        except:
-            k_mer_dict = dict()
-        new_words = [x.lower() for x in (self.vocab) if x.upper() not in model]
-        for w in new_words:
-            if w not in k_mer_dict:
-                k_mer_dict[w] = self.closest_kmer_in_model(w)
-        FileUtility.save_obj('../config/' + str(k_mer) +
-                             "_in_model", k_mer_dict)
         # produce embedding mapping
-        self.emb_trans = [self.model[x.upper()] if x.upper(
-        ) in self.model else self.model[k_mer_dict[x]] for x in self.vocab]
+        self.emb_trans = [self.model[x.lower()] for x in self.vocab]
         # summation vector
         self.embeddingX = self.X.dot(self.emb_trans)
 
