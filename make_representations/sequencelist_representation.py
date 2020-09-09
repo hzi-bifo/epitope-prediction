@@ -13,18 +13,21 @@ from gensim.models import KeyedVectors
 from scipy.sparse import csc_matrix
 import numpy as np
 from utility.file_utility import FileUtility
-
+import tqdm
+from gensim.models.wrappers import FastText
 
 class SequenceKmerRep(object):
-    def __init__(self, sequences, seq_type, k_mer, restricted_kmer=True, use_idf=False, norm=None, delete_empty_col=False):
+    def __init__(self, sequences, seq_type, k_mer, restricted_kmer=True, use_idf=False, norm=None, delete_empty_col=False, vocab='', testing=0):
         '''
             Class constructor
         '''
         self.seq_type = seq_type
-        self.sequences = sequences
+        self.sequences = [seq.lower() for seq in sequences]
         self.k_mer = k_mer
         self.restricted_kmer = restricted_kmer
         self.delete_empty_col = delete_empty_col
+        self.vocab = vocab
+        self.testing = 1
         self.set_tfidf_vect(use_idf=use_idf, norm=norm)
         self.set_tfidf_representation()
 
@@ -35,15 +38,18 @@ class SequenceKmerRep(object):
         :return:
         '''
         if self.restricted_kmer:
-            if self.seq_type == 'protein':
-                self.vocab = [''.join(xs) for xs in itertools.product(
-                    'arndcqeghilkmfpstwyvbzxuo', repeat=self.k_mer)]
-            if self.seq_type == 'dna':
-                self.vocab = [''.join(xs) for xs in itertools.product(
-                    'atcg', repeat=self.k_mer)]
-            if self.seq_type == 'rna':
-                self.vocab = [''.join(xs) for xs in itertools.product(
-                    'aucg', repeat=self.k_mer)]
+            if self.testing == 0:
+                if self.seq_type == 'protein':
+                    self.vocab = [''.join(xs) for xs in itertools.product(
+                        'arndcqeghilkmfpstwyv', repeat=self.k_mer)]
+                if self.seq_type == 'dna':
+                    self.vocab = [''.join(xs) for xs in itertools.product(
+                        'atcg', repeat=self.k_mer)]
+                if self.seq_type == 'rna':
+                    self.vocab = [''.join(xs) for xs in itertools.product(
+                        'aucg', repeat=self.k_mer)]
+            if self.testing == 1:
+                self.vocab = self.vocab
             self.vocab.sort()
             self.vectorizer = TfidfVectorizer(use_idf=use_idf, vocabulary=self.vocab, analyzer='char',
                                               ngram_range=(
@@ -77,18 +83,52 @@ class SequenceKmerRep(object):
 
 
 class SequenceKmerEmbRep(SequenceKmerRep):
-    def __init__(self, embedding_file, sequences, seq_type, k_mer, restricted_kmer=True, use_idf=False, norm=None):
+    def __init__(self, embedding_file, sequences, seq_type, k_mer, restricted_kmer=False, use_idf=False, norm=None):
         '''
             Class constructor
         '''
         SequenceKmerRep.__init__(self, sequences, seq_type, k_mer, restricted_kmer=restricted_kmer, use_idf=use_idf,
                                  norm=norm, delete_empty_col=True)
-        self.model = KeyedVectors.load_word2vec_format(
-            embedding_file, binary=False)
+        print('load embedding..')
+
+        if embedding_file.split('.')[-1]=='txt':
+            self.model = KeyedVectors.load_word2vec_format(
+                embedding_file, binary=False)
+        else:
+            self.model = FastText.load_fasttext_format(embedding_file)
+
+        model = self.model
+        try:
+            k_mer_dict = FileUtility.load_obj(
+                '../config/' + str(k_mer) + "_in_model")
+        except:
+            k_mer_dict = dict()
+
+        new_words = []
+        for x in self.vocab:
+            try:
+                model[x]
+            except:
+                new_words.append(x)
+
+        for w in tqdm.tqdm(new_words):
+            if w not in k_mer_dict:
+                k_mer_dict[w] = self.closest_kmer_in_model(w)
+
+        FileUtility.save_obj('./config/' + str(k_mer) +
+                             "_in_model", k_mer_dict)
+
         # produce embedding mapping
-        self.emb_trans = [self.model[x.lower()] for x in self.vocab]
+        self.emb_trans = []
+        for x in self.vocab:
+            try:
+                self.emb_trans.append(self.model[x])
+            except:
+                self.emb_trans.append(self.model[k_mer_dict[x]])
+
         # summation vector
         self.embeddingX = self.X.dot(self.emb_trans)
+        self.emb_kmer_concat =  np.concatenate((self.embeddingX , self.X.toarray()), axis=1)
 
     def closest_kmer_in_model(self, k_mer):
         '''
