@@ -5,6 +5,7 @@ from sklearn import svm, preprocessing
 import sys
 import numpy as np
 import os.path
+import pickle
 
 protein = PyPro()
 
@@ -128,7 +129,7 @@ def AAC(pep): # Single Amino Acid Composition feature
     for seq in pep:
         protein.ReadProteinSequence(seq)
         aac = protein.GetAAComp()
-        feature.append(aac)
+        feature.append(list(aac.values()))
     return feature
 
 
@@ -141,8 +142,8 @@ def DPC(pep): # Dipeptide Composition feature
     return feature
 
 
-def kmer(pep, k): # Calculate k-mer feature
-    feature = SequenceKmerRep(pep, 'protein', k)
+def kmer(pep, k, testing, vocab): # Calculate k-mer feature
+    feature = SequenceKmerRep(pep, 'protein', k, vocab=vocab, testing=testing)
     return feature
 
 
@@ -170,58 +171,94 @@ def readseq(file):  #read the sequence from the fasta file
 def peptides(seq):  #return peptides of length 20 from the sequence
     pep = []
     i=0
-    while i <= len(seq):
-        if i+20 > len(seq):
-            pep.append(seq[i:len(seq)])
-        else:
-            pep.append(seq[i:i+20])
-        i = i + 20
-    #print(pep)
+    while i < len(seq):
+        if len(seq)<20:
+            pep.append(seq)
+            break
+        if len(seq)>=20:
+            if i+20 > len(seq):
+                break
+            else:
+                pep.append(seq[i:i+20])
+            i = i + 1
+    print(pep)
     return pep
 
 
 def readmodel(mlfile):
     try:
-        return pickle.load(open(mlfile, 'rb'))
+         return pickle.load(open(mlfile, 'rb'))
     except:
         print("Error in reading model file")
         sys.exit()
+    #return pickle.load(open(mlfile, 'rb')), pickle.load(open(scalefile, 'rb'))
+    
 
-
-def predict(model, features):
-    return model.predict(features)
-    '''except:
-        print("Error in predicting epitopes.")
-        sys.exit()'''
-
-
-def combinefeature(pep):
+def combinefeature(pep, vocab):
     aapdic = readAAP("./aap/aap-general.txt.normal")
     aatdic = readAAT("./aat/aat-general.txt.normal")
-    f_aap = np.array(aap(pep, aapdic, 1))
+    #print(modeltype)
+    kmervocab = vocab
+    f_aap = np.array([aap(pep, aapdic, 1)]).T
     #print(f_aap)
-    f_aat = np.array(aat(pep, aatdic, 1))
+    f_aat = np.array([aat(pep, aatdic, 1)]).T
     #print(f_aat)
     f_aac = np.array(AAC(pep))
     #print(f_aac)
-    f_kmer = np.array(kmer(pep, 4).X.toarray())
-    #print(f_kmer)
+    f_kmer = np.average(np.array(kmer(pep, 4, vocab=kmervocab, testing=1).X.toarray()),axis=1)
+    #f_kmer_average = np.average(f_kmer, axis=1)
+    #f_vocab = (kmer(['AAAAB'], 4)).vocab
+    #print(f_kmer_average)
     if os.path.isfile('./protvec/sp_sequences_4mers_vec.txt') == True:
-        f_protvec = np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX)
+        f_protvec = np.average(np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX),axis=1)
+        #print(len(f_protvec[0]))
+        #print(f_protvec[0])
     else:
         print("Protvec binaries are missing. See README file.")
         sys.exit()    
         #print(f_protvec)
-    return np.column_stack((f_aat,f_aac,f_kmer,f_protvec))
+    return np.column_stack((f_aac,f_aap,f_aat,f_kmer,f_protvec))
+
+
+def predict(training_data, features):
+    model = training_data['model'].best_estimator_
+    training_features = training_data['training_features']
+    scaling = training_data['scaling']
+    features = scaling.transform(features)
+    print(model.score(scaling.transform(training_features),([1]*701)+([0]*701)))
+    try:
+        return model.predict_proba(features)
+    except:
+        print("Error in predicting epitopes.")
+        sys.exit()
+        
+def test(training_data, x_test, y_test):
+    model = training_data['model'].best_estimator_
+    training_features = training_data['training_features']
+    scaling = training_data['scaling']
+    features = scaling.transform(x_test)
+    print (model.score(features, y_test))
 
 
 def scoremodel(file, mlfile):
     sequence = readseq(file)
     pep = peptides(sequence)
-    features = combinefeature(pep)
-    #print(len(features[0]))
-    model = readmodel(mlfile)
-    return pep, predict(model, features)
+    training_data= readmodel(mlfile)
+    features = combinefeature(pep, training_data['vocab_'])
+    '''newdata = open('abcpred-20.txt', 'r')
+    anew = []
+    for l in newdata.readlines():
+        if l[0] == '#':
+            continue
+        else:
+            anew.append(l.strip().split())
+    anew = np.array(anew)
+    newdata.close()
+    testpeptides = anew[:,0]
+    y_test = anew[:, -1].astype(int)
+    #x = combinefeature(testpeptides, training_data['vocab_'])'''
+    #test(training_data, x, y_test)
+    return pep, predict(training_data, features)
 
 
 if __name__ == "__main__":
