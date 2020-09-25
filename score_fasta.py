@@ -1,6 +1,8 @@
 from Bio import SeqIO
 from pydpi.pypro import PyPro
 from make_representations.sequencelist_representation import SequenceKmerRep, SequenceKmerEmbRep
+from sklearn.metrics import precision_score, recall_score, roc_auc_score, auc, matthews_corrcoef, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, roc_curve, precision_recall_curve, precision_recall_fscore_support
 from sklearn import svm, preprocessing
 import sys
 import numpy as np
@@ -8,6 +10,14 @@ import os.path
 import pickle
 
 protein = PyPro()
+
+class MyCustomUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == "__main__":
+            module = "score_fasta"
+        return super().find_class(module, name)
+
+
 
 
 def readAAP(file):  #read AAP features from the AAP textfile
@@ -150,6 +160,16 @@ def kmer(pep, k, testing, vocab): # Calculate k-mer feature
 def protvec(pep, k, file): #Calculate ProtVec representation
     feature = SequenceKmerEmbRep(file, pep, 'protein', k)
     return feature
+    
+def PAAC(pep):
+    feature = []
+    for seq in pep:
+        protein.ReadProteinSequence(seq)
+        paac=protein.GetMoranAuto()
+        #paac = protein.GetPAAC(lamda=4)
+        feature.append(list(paac.values()))
+        name = list(paac.keys())
+    return feature
 
 
 def readseq(file):  #read the sequence from the fasta file
@@ -183,41 +203,126 @@ def peptides(seq):  #return peptides of length 20 from the sequence
             i = i + 1
     print(pep)
     return pep
+    
+
+def precision_0(y_true, y_pred, labels=None, average='binary', sample_weight=None):
+    '''
+    :param y_true:
+    :param y_pred:
+    :param labels:
+    :param average:
+    :param sample_weight:
+    :return: calculate prec for neg class
+    '''
+    p, _, _, _ = precision_recall_fscore_support(y_true, y_pred,
+                                                 beta=1,
+                                                 labels=labels,
+                                                 pos_label=0,
+                                                 average=average,
+                                                 warn_for=('f-score',),
+                                                 sample_weight=sample_weight)
+    return p
+
+
+def recall_0(y_true, y_pred, labels=None, average='binary', sample_weight=None):
+    '''
+    :param y_true:
+    :param y_pred:
+    :param labels:
+    :param average:
+    :param sample_weight:
+    :return: calculate recall for neg class
+    '''
+    _, r, _, _ = precision_recall_fscore_support(y_true, y_pred,
+                                                 beta=1,
+                                                 labels=labels,
+                                                 pos_label=0,
+                                                 average=average,
+                                                 warn_for=('f-score',),
+                                                 sample_weight=sample_weight)
+    return r
+
+
+def f1_0(y_true, y_pred, labels=None, average='binary', sample_weight=None):
+    '''
+    :param y_true:
+    :param y_pred:
+    :param labels:
+    :param average:
+    :param sample_weight:
+    :return: calculate f1 for neg class
+    '''
+    _, _, f, _ = precision_recall_fscore_support(y_true, y_pred,
+                                                 beta=1,
+                                                 labels=labels,
+                                                 pos_label=0,
+                                                 average=average,
+                                                 warn_for=('f-score',),
+                                                 sample_weight=sample_weight)
+    return f
+
+
 
 
 def readmodel(mlfile):
-    try:
+    '''try:
+         print(mlfile)
          return pickle.load(open(mlfile, 'rb'))
     except:
         print("Error in reading model file")
-        sys.exit()
-    #return pickle.load(open(mlfile, 'rb')), pickle.load(open(scalefile, 'rb'))
+        sys.exit()'''
+    with open(mlfile, 'rb') as f:
+        unpickler = MyCustomUnpickler(f)
+        obj = unpickler.load()
+    return obj
     
 
-def combinefeature(pep, vocab):
-    aapdic = readAAP("./aap/aap-general.txt.normal")
-    aatdic = readAAT("./aat/aat-general.txt.normal")
-    #print(modeltype)
-    kmervocab = vocab
-    f_aap = np.array([aap(pep, aapdic, 1)]).T
-    #print(f_aap)
-    f_aat = np.array([aat(pep, aatdic, 1)]).T
-    #print(f_aat)
-    f_aac = np.array(AAC(pep))
-    #print(f_aac)
-    f_kmer = np.average(np.array(kmer(pep, 4, vocab=kmervocab, testing=1).X.toarray()),axis=1)
-    #f_kmer_average = np.average(f_kmer, axis=1)
-    #f_vocab = (kmer(['AAAAB'], 4)).vocab
-    #print(f_kmer_average)
-    if os.path.isfile('./protvec/sp_sequences_4mers_vec.txt') == True:
-        f_protvec = np.average(np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX),axis=1)
-        #print(len(f_protvec[0]))
-        #print(f_protvec[0])
-    else:
-        print("Protvec binaries are missing. See README file.")
-        sys.exit()    
-        #print(f_protvec)
-    return np.column_stack((f_aac,f_aap,f_aat,f_kmer,f_protvec))
+def combinefeature(pep, featurelist, vocab):
+    print (featurelist)
+    a=np.empty([len(pep), 1])
+    if 'aap' in featurelist:
+        aapdic = readAAP("./aap/aap-fulluniprot.normal")
+        f_aap = np.array([aap(pep, aapdic, 1)]).T
+        a = np.column_stack((a,f_aap))
+        #print(f_aap)
+    if 'aat' in featurelist:
+        aatdic = readAAT("./aat/aat-fulluniprot.normal")
+        f_aat = np.array([aat(pep, aatdic, 1)]).T
+        a = np.column_stack((a, f_aat))
+        #print(f_aat)
+    if 'dpc' in featurelist:
+        f_dpc, name = DPC(pep)
+        # f_dpc = np.average(f_dpc, axis =1)
+        a = np.column_stack((a, np.array(f_dpc)))
+    if 'aac' in featurelist:
+        f_aac = AAC(pep)
+        a = np.column_stack((a, np.array(f_aac)))
+        #fname = fname + name
+    if 'paac' in featurelist:
+        f_paac = PAAC(pep)
+        f_paac = pca.fit_transform(f_paac)
+        a = np.column_stack((a, np.array(f_paac)))
+        #fname = fname + name
+    if 'kmer' in featurelist:
+        kmers = kmer(pep, 4, vocab=vocab, testing=1)
+        #f_kmer = np.array(kmers.X.toarray())
+        f_kmer = np.array(kmers.X.toarray())
+        a = np.column_stack((a, f_kmer))
+        #fname = fname + name
+    if 'ctd' in featurelist:
+        f_ctd, name = CTD(pep)
+        a = np.column_stack((a, np.array(f_ctd)))
+        #fname = fname + name
+    if 'protvec' in featurelist:
+            if os.path.isfile('./protvec/sp_sequences_4mers_vec.txt') == True:
+                f_protvec = np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX)
+                a = np.column_stack((a, f_protvec))
+            else:
+                print("Protvec binaries are missing. See README file.")
+                sys.exit()    
+                #print(f_protvec)
+    #print(a)
+    return a[:,1:]
 
 
 def predict(training_data, features):
@@ -225,7 +330,7 @@ def predict(training_data, features):
     training_features = training_data['training_features']
     scaling = training_data['scaling']
     features = scaling.transform(features)
-    print(model.score(scaling.transform(training_features),([1]*701)+([0]*701)))
+    #print(model.score(scaling.transform(training_features),([1]*701)+([0]*701)))
     try:
         return model.predict_proba(features)
     except:
@@ -234,7 +339,6 @@ def predict(training_data, features):
         
 def test(training_data, x_test, y_test):
     model = training_data['model'].best_estimator_
-    training_features = training_data['training_features']
     scaling = training_data['scaling']
     features = scaling.transform(x_test)
     print (model.score(features, y_test))
@@ -244,7 +348,8 @@ def scoremodel(file, mlfile):
     sequence = readseq(file)
     pep = peptides(sequence)
     training_data= readmodel(mlfile)
-    features = combinefeature(pep, training_data['vocab_'])
+    print(training_data.keys())
+    features = combinefeature(pep, training_data['featurelist'], training_data['vocab'])
     '''newdata = open('abcpred-20.txt', 'r')
     anew = []
     for l in newdata.readlines():
@@ -256,8 +361,9 @@ def scoremodel(file, mlfile):
     newdata.close()
     testpeptides = anew[:,0]
     y_test = anew[:, -1].astype(int)
-    #x = combinefeature(testpeptides, training_data['vocab_'])'''
-    #test(training_data, x, y_test)
+    x = combinefeature(testpeptides, training_data['featurelist'], training_data['vocab'])
+    print(len(x),len(y_test))
+    test(training_data, x, y_test)'''
     return pep, predict(training_data, features)
 
 
