@@ -97,35 +97,7 @@ class SequenceKmerEmbRep(SequenceKmerRep):
         else:
             self.model = FastText.load_fasttext_format(embedding_file)
 
-        model = self.model
-        try:
-            k_mer_dict = FileUtility.load_obj(
-                '../config/' + str(k_mer) + "_in_model")
-        except:
-            k_mer_dict = dict()
-
-        new_words = []
-        for x in self.vocab:
-            try:
-                model[x]
-            except:
-                new_words.append(x)
-
-        for w in tqdm.tqdm(new_words):
-            if w not in k_mer_dict:
-                k_mer_dict[w] = self.closest_kmer_in_model(w)
-
-        FileUtility.save_obj('./config/' + str(k_mer) +
-                             "_in_model", k_mer_dict)
-
-        # produce embedding mapping
-        self.emb_trans = []
-        for x in self.vocab:
-            try:
-                self.emb_trans.append(self.model[x])
-            except:
-                self.emb_trans.append(self.model[k_mer_dict[x]])
-
+        self.emb_trans = [self.model[x.lower()] for x in self.vocab]
         # summation vector
         self.embeddingX = self.X.dot(self.emb_trans)
         self.emb_kmer_concat =  np.concatenate((self.embeddingX , self.X.toarray()), axis=1)
