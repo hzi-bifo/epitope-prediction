@@ -25,12 +25,12 @@ The code for training new models and results from the EpitopVec article are avai
     pip3 install ./requirement/pydpi.tar.gz
     ```
    
- * Binary file for ProtVec representation of proteins. It can be downloaded from https://drive.google.com/drive/folders/1Y3PgFzUwCKu7Jzn0XSwd7UaBmDkXpTBZ?usp=sharing and then it should be put in the ```protvec``` folder. Or if you would like to use wget use the following commands:
+ * Binary file for ProtVec representation of proteins can be downloaded using the following command in the ```protvec``` directory:
  
  ```
  cd protvec
  wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.txt
- wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.txt.bin
+ wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.bin
  ```
  
    
