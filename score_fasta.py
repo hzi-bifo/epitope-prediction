@@ -4,10 +4,13 @@ from make_representations.sequencelist_representation import SequenceKmerRep, Se
 from sklearn.metrics import precision_score, recall_score, roc_auc_score, auc, matthews_corrcoef, classification_report
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, roc_curve, precision_recall_curve, precision_recall_fscore_support
 from sklearn import svm, preprocessing
+from sklearn.model_selection import KFold, GridSearchCV, StratifiedKFold
 import sys
 import numpy as np
 import os.path
 import pickle
+import pylab as pl
+from scipy import interp
 
 protein = PyPro()
 
@@ -277,16 +280,16 @@ def readmodel(mlfile):
     return obj
     
 
-def combinefeature(pep, featurelist, vocab):
+def combinefeature(pep, featurelist, vocab, aap_file, aat_file):
     print (featurelist)
     a=np.empty([len(pep), 1])
     if 'aap' in featurelist:
-        aapdic = readAAP("./aap/aap-fulluniprot.normal")
+        aapdic = readAAP("./aap/"+aap_file)
         f_aap = np.array([aap(pep, aapdic, 1)]).T
         a = np.column_stack((a,f_aap))
         #print(f_aap)
     if 'aat' in featurelist:
-        aatdic = readAAT("./aat/aat-fulluniprot.normal")
+        aatdic = readAAT("./aat/"+aat_file)
         f_aat = np.array([aat(pep, aatdic, 1)]).T
         a = np.column_stack((a, f_aat))
         #print(f_aat)
@@ -325,10 +328,43 @@ def combinefeature(pep, featurelist, vocab):
     return a[:,1:]
 
 
+def plot(model, x,y):
+    cv = StratifiedKFold(n_splits=5)
+    splits = list(cv.split(x,y))
+    mean_tpr = 0.0
+    mean_fpr = np.linspace(0, 1, 100)
+    all_tpr = []
+    classifier = model
+    for i, (train, test) in enumerate(splits):
+        probas_ = classifier.fit(x[train], y[train]).predict_proba(x[test])
+        #clf.fit(x[train], y[train])
+        predict_values = classifier.fit(x[train], y[train]).predict(x[test])
+        print(classification_report(y[test], predict_values))
+        fpr, tpr, thresholds = roc_curve(y[test], probas_[:, 1])
+        mean_tpr += interp(mean_fpr, fpr, tpr)
+        mean_tpr[0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        pl.plot(fpr, tpr, lw=1, label='ROC fold %d (area = %0.2f)' % (i, roc_auc))
+    pl.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
+    mean_tpr /= len(splits)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    pl.plot(mean_fpr, mean_tpr, 'k--',
+            label='Mean ROC (area = %0.2f)' % mean_auc, lw=2)
+
+    pl.xlim([-0.05, 1.05])
+    pl.ylim([-0.05, 1.05])
+    pl.xlabel('False Positive Rate')
+    pl.ylabel('True Positive Rate')
+    pl.title('BCPred')
+    pl.show()
+    
+
 def predict(training_data, features):
     model = training_data['model'].best_estimator_
     training_features = training_data['training_features']
     scaling = training_data['scaling']
+    #plot(model , scaling.transform(training_features), np.array([1]*701 + [0]*701))
     features = scaling.transform(features)
     #print(model.score(scaling.transform(training_features),([1]*701)+([0]*701)))
     try:
@@ -344,12 +380,12 @@ def test(training_data, x_test, y_test):
     print (model.score(features, y_test))
 
 
-def scoremodel(file, mlfile):
+def scoremodel(file, mlfile, aap_file, aat_file):
     sequence = readseq(file)
     pep = peptides(sequence)
     training_data= readmodel(mlfile)
-    print(training_data.keys())
-    features = combinefeature(pep, training_data['featurelist'], training_data['vocab'])
+    #print(training_data.keys())
+    features = combinefeature(pep, training_data['featurelist'], training_data['vocab'], aap_file, aat_file)
     '''newdata = open('abcpred-20.txt', 'r')
     anew = []
     for l in newdata.readlines():
