@@ -314,8 +314,8 @@ def combinefeature(pep, featurelist, vocab):
         a = np.column_stack((a, np.array(f_ctd)))
         #fname = fname + name
     if 'protvec' in featurelist:
-            if os.path.isfile('./protvec/sp_sequences_4mers_vec.txt') == True:
-                f_protvec = np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.txt').embeddingX)
+            if os.path.isfile('./protvec/sp_sequences_4mers_vec.bin') == True:
+                f_protvec = np.array(protvec(pep, 4, './protvec/sp_sequences_4mers_vec.bin').embeddingX)
                 a = np.column_stack((a, f_protvec))
             else:
                 print("Protvec binaries are missing. See README file.")
