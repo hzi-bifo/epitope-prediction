@@ -178,12 +178,13 @@ def PAAC(pep):
 def readseq(file):  #read the sequence from the fasta file
     try:
         sequence = SeqIO.read(file, "fasta")
+        print("Amino acid sequence:",sequence.seq)
         for i in sequence.seq:
             #print(i)
-            if i in ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'] :
+            if i.upper() in ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'] :
                 continue
             else:
-                print("Invalid amino acid code found. Please enter sequences with only 20 aa code.")
+                print("\'"+i+"\' is not a valid amino acid. Please enter sequences with only 20 aa code.")
                 sys.exit()
         return(str(sequence.seq))
     except ValueError:
@@ -204,7 +205,7 @@ def peptides(seq):  #return peptides of length 20 from the sequence
             else:
                 pep.append(seq[i:i+20])
             i = i + 1
-    print(pep)
+    #print(pep)
     return pep
     
 
@@ -268,20 +269,20 @@ def f1_0(y_true, y_pred, labels=None, average='binary', sample_weight=None):
 
 
 def readmodel(mlfile):
-    '''try:
-         print(mlfile)
-         return pickle.load(open(mlfile, 'rb'))
+    try:
+         print("Loading modelfile:", mlfile)
+         with open(mlfile, 'rb') as f:
+             unpickler = MyCustomUnpickler(f)
+             obj = unpickler.load()
+             return obj
     except:
         print("Error in reading model file")
-        sys.exit()'''
-    with open(mlfile, 'rb') as f:
-        unpickler = MyCustomUnpickler(f)
-        obj = unpickler.load()
-    return obj
+        sys.exit()
+    
     
 
 def combinefeature(pep, featurelist, vocab, aap_file, aat_file):
-    print (featurelist)
+    
     a=np.empty([len(pep), 1])
     if 'aap' in featurelist:
         aapdic = readAAP("./aap/"+aap_file)
@@ -385,6 +386,8 @@ def scoremodel(file, mlfile, aap_file, aat_file):
     pep = peptides(sequence)
     training_data= readmodel(mlfile)
     #print(training_data.keys())
+    print ("Calculating the following features for test peptides...")
+    print(*training_data['featurelist'], sep=",")
     features = combinefeature(pep, training_data['featurelist'], training_data['vocab'], aap_file, aat_file)
     '''newdata = open('abcpred-20.txt', 'r')
     anew = []
