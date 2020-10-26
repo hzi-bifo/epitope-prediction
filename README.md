@@ -8,7 +8,7 @@ The code for training new models and results from the EpitopVec article are avai
     * **numpy 1.17.1**
     * **scipy 1.4.1**
     * **matplotlib 3.1.3**
-    * **sklearn 0.22.1**
+    * **scikit-learn 0.22.1**
     * **pydpi 1.0**
     * **biopython 1.71.0**
     * **tqdm 4.15.0**
@@ -22,7 +22,7 @@ The code for training new models and results from the EpitopVec article are avai
    
   Additionally, **pydpi 1.0** from ```pip``` might be incompatible with **Python 3**. Please install the **pydpi** package from the provided ```requirement/pydpi.tar.gz``` file.
     ```
-    pip3 install ./requirement/pydpi.tar.gz
+    pip3 install ./requirement/pydpi-1.0.tar.gz
     ```
    
  * Binary file for ProtVec representation of proteins can be downloaded using the following command in the ```protvec``` directory:
@@ -48,7 +48,7 @@ The code for training new models and results from the EpitopVec article are avai
  
     -o : The name of the output directory. This will contain the list of peptides which are predicted as epitopes.
   
-    -m : Machine-learning model trained on the training set as a pickle file. Use __general__ for general predictions(default) and __viral__ for viral predictions
+    -m : Machine-learning model trained on the training set as a pickle file. Use general for general predictions(default) and viral for viral prediction
   ```
 ## Input
   The program takes a protein sequence as input. The input file should be in **FASTA** file format and should only use the 20 aa codes.       Please put the input file in the _input_ folder or enter the full path of the inputfile. Please take a look in the _input_ folder to see an example of input fasta      file: ```example.fasta``` 
