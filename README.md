@@ -44,7 +44,7 @@ The code for training new models and results from the EpitopVec article are avai
  ```
  cd protvec
  wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.txt
- wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.txt.bin -O sp_sequences_4mers_vec.bin
+ wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.bin
  ```
  
    
