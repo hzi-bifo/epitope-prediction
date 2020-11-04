@@ -1,82 +1,112 @@
 import sys
 import score_fasta
 import argparse
-import os.path
+import os
 import warnings
 warnings.filterwarnings("ignore")
 
-def options():
-    try:
-        parser = argparse.ArgumentParser(
-        description=("Takes an input fasta file and outputs the score of peptides "),
-        formatter_class=argparse.HelpFormatter,
-        usage=("%(prog)s [-h]"
-               "[-i inputfile][-o outputfile] [-m modeltype]"))
-        parser.add_argument("-i", "--input",  help=(" input fasta file.Please put the file in input folder or enter full path \n"), required=True)
-        parser.add_argument("-o", "--output", help=(" output file with predicitons \n"), required = True)
-        parser.add_argument("-m", "--model", default = "general",choices=['general', 'viral'], help=(" general for general predictions and viral for viral predictions\n"))
-        args = parser.parse_args()
 
-        inputfile = args.input
-        outputfile = args.output
-        model = args.model
-    except:
-        sys.exit()
-    return inputfile, outputfile, model
+def error(er):
+    sys.exit(er)
+
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message+"\n")
+        self.print_help()
+        sys.exit(2)
+
+    def parse_args(self, args=None, namespace=None):
+        namespace = super().parse_args(args, namespace)
+        if namespace.length < 4:
+            MyParser.error(self, "Peptide length can't be less than 4. Please enter a value >= 4. For best results use 20(default).")
+        if namespace.cutoff > 1:
+            MyParser.error(self, "Cut-off score can't be more than 1. Please enter a value between 0 and 1.")
+        if namespace.cutoff < 0:
+            MyParser.error(self, "Cut-off score can't be less than 0. Please enter a value between 0 and 1.")
+        return namespace
+
+
+def options():
+    
+    parser = MyParser(
+    description=("Takes an input fasta file and outputs the score of the peptides "),
+    formatter_class=argparse.HelpFormatter,
+    usage=("%(prog)s [-h]"
+           " -i inputfile -o outputfolder [-m modeltype] [-l length] [-c cutoff"), add_help=False)
+    group_required = parser.add_argument_group('required arguments')
+    group_required.add_argument("-i", "--input",  help=(" input fasta file.Please put the file in input folder or enter the full path \n"), required=True)
+    group_required.add_argument("-o", "--output", help=(" output folder where predictions will be saved \n"), required=True)
+    group_optional = parser.add_argument_group('optional arguments')
+    group_optional.add_argument('-h','--help',action='help',default=argparse.SUPPRESS,help='show this help message and exit')
+    group_optional.add_argument("-m", "--model", default = "general",choices=['general', 'viral'], help=(" general for general predictions(default) and viral for viral predictions\n"))
+    group_optional.add_argument("-l", "--length", default = 20, type=int, help=("length of the peptides. Should be an integer >=4. For best results, use peptide length = 20(default).\n"),metavar= '>=4')
+    group_optional.add_argument("-c", "--cutoff", default = 0.5, type=float, help=("cut-off score (default = 0.5) for a peptide to be considered an epitope. Should be a number between 0 and 1.\n"), metavar = '0.0 to 1.0')
+    '''group_optional.add_argument("-c", "--cutoff", default = 0.5, type=float, help=("cut-off score (default = 0.5) for a peptide to be considered an epitope. Should be a number between 0 and 1.\n"), metavar = '0.0 to 1.0')'''
+    #args = parser.parse_args(None if sys.argv[1:] else ['-h'])
+    args = parser.parse_args()
+    #print(args.input)
+    inputfile = args.input
+    outputfile = args.output
+    model = args.model
+    length = args.length
+    cutoff = args.cutoff
+    return inputfile, outputfile, model, length, cutoff
 
 if __name__ == "__main__":
-    inputfile, outputfile, model = options()
+    inputfile, outputdir, model, length, cutoff = options()
     
     aap_file=''
     aat_file=''
     #print("model is:",model)
     if model.strip() == "general":
-        print("Predictions will be made using general model")
+        print("\nPredictions will be made using general model \n")
         aap_file="aap-general.normal"
         aat_file="aat-general.normal"
         model = 'svm-general.pickle'
     if model.strip() == "viral":
-        print("Predictions will be made using viral model")
+        print("\nPredictions will be made using viral model \n")
         aap_file="aap-viral.normal"
         aat_file="aat-viral.normal"
         model = 'svm-viral.pickle'
 
+    if os.path.isfile('./protvec/sp_sequences_4mers_vec.bin') == False:
+        error("Error. Protvec binary file is missing in the protvec folder. See README file")
+
+    if os.path.isfile('./aap/'+aap_file) == False:
+        error("Error. File for calculating AAP scale features is missing in the aap folder.")
+
+    if os.path.isfile('./aat/'+aat_file) == False:
+        error("Error. File for calculating AAT scale features is missing in the aat folder.")
+
     ifile=''
-    if os.path.isfile('./input/'+inputfile)==True: # check if the inputfile is in the input folder
-        print("Reading inputfile: /input/"+inputfile)
+    if os.path.isfile('./input/'+inputfile) == True: # check if the inputfile is in the input folder
+        print("Reading inputfile: /input/"+inputfile+"\n")
         ifile = "./input/"+inputfile
     elif os.path.isfile(inputfile)==True: #check if the inputfile exists in the path
-        print ("Reading inputfile: "+"inputfile")
+        print ("Reading inputfile: "+inputfile+"\n")
         ifile = inputfile
     else:
-        print ("Error in reading inputfile. Please enter the name/full path of the inputfile.")
-        sys.exit()
+        error("Error. Inputfile not found in the specified location. Please enter the correct name/path of the inputfile.")
 
+    ofolder=''
+    outputdir = os.path.realpath(outputdir)
+    if os.path.isdir(outputdir) == True:
+        print("Output folder already exists. Predictions will be put in the",os.path.basename(outputdir),"folder. \n")
+        ofolder = outputdir
+    if os.path.isdir(outputdir) == False and os.path.isdir(os.path.dirname(outputdir)) == True :
+        print("Output folder:",os.path.basename(outputdir)," will be created at the specified path:",os.path.dirname(outputdir),"\n")
+        os.mkdir(outputdir)
+        ofolder = outputdir
+    if os.path.isdir(outputdir) == False and os.path.isdir(os.path.dirname(outputdir)) == False :
+        error("Error. Unable to find or create the output folder. Please check the output path")
 
+    sequences, pep, peploc, seqid, pred = score_fasta.scoremodel(ifile, "./model/"+model, aap_file, aat_file, length )
 
-    peptide_list, pred_probability = score_fasta.scoremodel(ifile, "./model/"+model, aap_file, aat_file )
-    out = open("./output/"+outputfile, 'w')
-    epitopelist=[]
-    nonepitopelist=[]
     
-    for i in range(len(pred_probability)):
-        if pred_probability[i][1] >= 0.5:
-            epitopelist.append(i)
-        '''if pred_probability[i][1] < 0.5:
-            nonepitopelist.append(i)
-            print("Peptides predicted as non-epitopes:")
-            print(str(peptide_list[i])+"\t"+str(pred_probability[i][1]))
-            print("Non-epitopes \n", file=out)
-            print(str(peptide_list[i])+"\t"+str(pred_probability[i][1]), file=out)'''
-    
-    if len(epitopelist) > 0:
-        print("Peptides predicted as epitopes:")
-        #print("Epitopes \n", file=out)
-        for i in epitopelist:
-            print(str(peptide_list[i])+"\t"+str(pred_probability[i][1]))
-            print(str(peptide_list[i])+"\t"+str(pred_probability[i][1]), file=out)
-        print("The predicted epitopes are also available in the "+outputfile+" file in the output folder.")
+    score_fasta.print_file(sequences, pep, peploc, seqid, pred, cutoff, length, ofolder)
+
+    if len(sequences.keys())==1:
+        score_fasta.print_stdout(pep, peploc, seqid, pred, cutoff, length)
     else:
-        print("No peptides were predicted as epitopes")
-    out.close()
-
+        print("Fasta file has more than one sequence. The predictions won't be displayed here. Please check the predictions in the \'"+ofolder+"\' folder. \n")
+    print("Done!")
