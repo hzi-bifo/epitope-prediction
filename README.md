@@ -59,9 +59,8 @@ The code for training new models and results from the EpitopVec article are avai
   
    required arguments
     
-    -i : This takes the input file with the protein sequences (in FASTA format) on which epitopes are to be predicted.
- 
-    -o : The name of the output directory. This will contain the list of peptides which are predicted as epitopes.
+     -i : This takes the input file with the protein sequences (in FASTA format) on which epitopes are to be predicted.
+     -o : The name of the output directory. This will contain the list of peptides which are predicted as epitopes.
     
    optional arguments
      
