@@ -55,18 +55,19 @@ The code for training new models and results from the EpitopVec article are avai
   ```
 * Run the main.py file with the following command.
   ```    
-    python3 main.py -i inputfile.fasta -o outputfilename -m machine-learning-model (general OR viral)
-  
-   required arguments
+    python3 main.py [-h] -i inputfile -o outputfolder [-m modeltype] [-l length] [-c cutoff]
     
-     -i : This takes the input file with the protein sequences (in FASTA format) on which epitopes are to be predicted.
-     -o : The name of the output directory. This will contain the list of peptides which are predicted as epitopes.
+    required arguments
     
-   optional arguments
+     -i, --input  : input fasta file.Please put the file in input folder or enter the full path
+     -o, --output : output folder where predictions will be saved
+    
+    optional arguments
      
-     -m : Machine-learning model to use for making predictions. Use 'general' for general predictions(default) and 'viral' for viral prediction
-     -l : Length of the peptides to be calculated from the sequence. Should be an integer >=4. For best results use length = 20(default)
-     -c : cutoff score to consider for considering an peptide be epitope. Should be a number between 0 and 1. The default value is 0.5.
+     -h, --help   : show this help message and exit
+     -m, --model  : Machine-learning model to use for making predictions. Use 'general' for general predictions(default) and 'viral' for viral prediction.
+     -l, --length : Length of the peptides to be calculated from the sequence. Should be an integer >=4. For best results use peptide length = 20(default).
+     -c, --cutoff : cut-off score (default = 0.5) for a peptide to be considered an epitope. Should be a number between 0 and 1.
   ```
 ## Input<a name="input"></a>
   The program takes a file with protein sequences as input. The input file should be in **FASTA** file format and should only use the 20 aa codes. The fasta file can contain  a single or multiple protein sequences. If any sequence contains an invalid aa code or the length of the sequence is <4, then that sequence will be skipped while making predictions. Also, if the length of the sequence is < specified peptide length _(-l length)_, then the prediction will be made on the entire sequence.     
