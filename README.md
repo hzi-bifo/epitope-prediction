@@ -1,5 +1,5 @@
 # EpitopeVec: Linear Epitope Prediction Using DeepProtein Sequence Embeddings
----
+
 ## Contents
 - [EpitopeVec Introduction](#introduction)
 - [Requirements](#requirements)
@@ -10,7 +10,6 @@
 - [Citation](#citation)
 - [Contact](#contact)
 
----
 
 
 ## EpitopeVec<a name="introduction"></a>
