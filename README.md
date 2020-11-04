@@ -1,4 +1,19 @@
 # EpitopeVec: Linear Epitope Prediction Using DeepProtein Sequence Embeddings
+---
+##Contents
+-[EpitopeVec Introduction](#introduction)
+-[Requirements](#requirements)
+-[Usage](#usage)
+-[Input](#input)
+-[Output](#output)
+-[License](#license)
+-[Citation](#citation)
+-[Contact](#contact)
+
+---
+
+
+## EpitopeVec<a name="introduction"></a>
 EpitopeVec predicts linear B-cell epitopes. It takes protein sequences (FASTA format) as input and then lists the peptides (of a given amino acids length) that can be epitopes along with their respective predicition probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, amino acid pair propensity scale, amino acid trimer propensity scale, and distributed vector representation of proteins (ProtVec).
 The code for training new models and results from the EpitopVec article are available at https://github.com/hzi-bifo/epitope-prediction-paper  
 
@@ -63,13 +78,13 @@ The code for training new models and results from the EpitopVec article are avai
 The output files are created in the _(-o output)_ folder. If the specified foler doesn't exist in the output path provided, it will be created. Files with the name of the sequence and suffix _.epitopes.txt_ for each sequence in the fasta file will be created in the output folder. The first column is the name of the sequence, second is the peptide, third is the starting postion of the peptide in the sequence, fourth is the ending postion of the peptide in the sequence and last column is the predicted probability score for the likelihood of that peptide being an epitope. By default, a predicted score of >= 0.5 is considered to be an epitope. To specify a different score cutoff, please use the _(-c cutoff)_ argument.
 If the fasta file contains a single sequence then the predictions are also displayed on the commandline.
 
-## License
-GPL-3.0 License. Please see [License](https://github.com/hzi-bifo/epitope-prediction/blob/master/LICENSE.md)
+## License<a name="license"></a>
+[GPL-3.0 License](https://github.com/hzi-bifo/epitope-prediction/blob/master/LICENSE.md)
 
-## Citation
+## Citation<a name="citation"></a>
 Add citation here.
 
-### Contact
+## Contact<a name="contact"></a>
 - Open an [issue](https://github.com/hzi-bifo/epitope-prediction/issues) in the repository.
 - Send an email to Akash Bahai (akash.bahai@helmholtz-hzi.de).
 
