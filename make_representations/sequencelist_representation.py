@@ -89,7 +89,8 @@ class SequenceKmerEmbRep(SequenceKmerRep):
         '''
         SequenceKmerRep.__init__(self, sequences, seq_type, k_mer, restricted_kmer=restricted_kmer, use_idf=use_idf,
                                  norm=norm, delete_empty_col=True)
-        print('loading embedding..')
+        print("Loading protvec embedding file:",embedding_file)
+        print('Calculating embeddings...')
 
         if embedding_file.split('.')[-1]=='txt':
             self.model = KeyedVectors.load_word2vec_format(
