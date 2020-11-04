@@ -1,6 +1,6 @@
 # EpitopeVec: Linear Epitope Prediction Using DeepProtein Sequence Embeddings
 ---
-##Contents
+## Contents
 - [EpitopeVec Introduction](#introduction)
 - [Requirements](#requirements)
 - [Usage](#usage)
