@@ -13,7 +13,7 @@
 
 
 ## EpitopeVec<a name="introduction"></a>
-EpitopeVec predicts linear B-cell epitopes. It takes protein sequences (FASTA format) as input and then lists the peptides (of a given amino acids length) that can be epitopes along with their respective predicition probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, amino acid pair propensity scale, amino acid trimer propensity scale, and distributed vector representation of proteins (ProtVec).
+EpitopeVec predicts linear B-cell epitopes. It takes protein sequences (FASTA format) as input and then lists the peptides (of a given amino acids length) that can be epitopes along with their respective prediction probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, amino acid pair propensity scale, amino acid trimer propensity scale, and distributed vector representation of proteins (ProtVec).
 The code for training new models and results from the EpitopVec article are available at https://github.com/hzi-bifo/epitope-prediction-paper  
 
 ## Requirements<a name="requirements"></a>
@@ -74,7 +74,7 @@ The code for training new models and results from the EpitopVec article are avai
  Please put the input file in the ```input``` folder or enter the full path of the inputfile. Please take a look in the ```input``` folder to see an example of input fasta file: ```example.fasta``` 
   
 ## Output<a name="output"></a>
-The output files are created in the ```-o output``` folder. If the specified folder doesn't exist in the output path provided, it will be created. For each sequence in the fasta file, files with the name of the sequence and suffix ```.epitopes.txt```  will be created in the output folder. The first column is the name of the sequence, second is the peptide, third is the starting postion of the peptide in the sequence, fourth is the ending postion of the peptide in the sequence, and the last column is the predicted probability score for the likelihood of that peptide being an epitope. By default, a predicted score of >= 0.5 is considered to be an epitope. To specify a different score cutoff, please use the ```-c cutoff``` argument.
+The output files are created in the ```-o output``` folder. If the specified folder doesn't exist in the output path provided, it will be created. For each sequence in the fasta file, files with the name of the sequence and the suffix ```.epitopes.txt```  will be created in the output folder. The first column is the name of the sequence, second is the peptide, third is the starting postion of the peptide in the sequence, fourth is the ending postion of the peptide in the sequence, and the last column is the predicted probability score for the likelihood of that peptide being an epitope. By default, a predicted score of >= 0.5 is considered to be an epitope. To specify a different score cutoff, please use the ```-c cutoff``` argument.
 If the fasta file contains a single sequence then the predictions are also displayed on the commandline.
 
 ## License<a name="license"></a>
