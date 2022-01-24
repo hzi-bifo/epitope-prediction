@@ -81,7 +81,8 @@ If the fasta file contains a single sequence then the predictions are also displ
 [GPL-3.0 License](https://github.com/hzi-bifo/epitope-prediction/blob/master/LICENSE.md)
 
 ## Citation<a name="citation"></a>
-Add citation here.
+If you use EpitopeVec for your work, please cite as:
+<div class="csl-entry">Bahai, A., Asgari, E., Mofrad, M. R. K., Kloetgen, A., &#38; McHardy, A. C. (2021). EpitopeVec: linear epitope prediction using deep protein sequence embeddings. <i>Bioinformatics</i>, <i>37</i>(23). https://doi.org/10.1093/bioinformatics/btab467</div>
 
 ## Contact<a name="contact"></a>
 - Open an [issue](https://github.com/hzi-bifo/epitope-prediction/issues) in the repository.
