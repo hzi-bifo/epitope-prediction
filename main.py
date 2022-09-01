@@ -55,28 +55,16 @@ def options():
 if __name__ == "__main__":
     inputfile, outputdir, model, length, cutoff = options()
     
-    aap_file=''
-    aat_file=''
     #print("model is:",model)
     if model.strip() == "general":
         print("\nPredictions will be made using general model \n")
-        aap_file="aap-general.normal"
-        aat_file="aat-general.normal"
-        model = 'svm-general.pickle'
+        model = 'svm-ibce.pickle'
     if model.strip() == "viral":
         print("\nPredictions will be made using viral model \n")
-        aap_file="aap-viral.normal"
-        aat_file="aat-viral.normal"
         model = 'svm-viral.pickle'
 
     if os.path.isfile('./protvec/sp_sequences_4mers_vec.bin') == False:
         error("Error. Protvec binary file is missing in the protvec folder. See README file")
-
-    if os.path.isfile('./aap/'+aap_file) == False:
-        error("Error. File for calculating AAP scale features is missing in the aap folder.")
-
-    if os.path.isfile('./aat/'+aat_file) == False:
-        error("Error. File for calculating AAT scale features is missing in the aat folder.")
 
     ifile=''
     if os.path.isfile('./input/'+inputfile) == True: # check if the inputfile is in the input folder
@@ -100,7 +88,7 @@ if __name__ == "__main__":
     if os.path.isdir(outputdir) == False and os.path.isdir(os.path.dirname(outputdir)) == False :
         error("Error. Unable to find or create the output folder. Please check the output path")
 
-    sequences, pep, peploc, seqid, pred = score_fasta.scoremodel(ifile, "./model/"+model, aap_file, aat_file, length )
+    sequences, pep, peploc, seqid, pred = score_fasta.scoremodel(ifile, "./model/"+model, length )
 
     
     score_fasta.print_file(sequences, pep, peploc, seqid, pred, cutoff, length, ofolder)

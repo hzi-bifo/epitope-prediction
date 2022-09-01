@@ -176,16 +176,16 @@ def PAAC(pep):
     return feature
 
 
-def combinefeature(pep, featurelist, vocab, aap_file, aat_file):
+def combinefeature(pep, featurelist, vocab, aapdic, aatdic):
     
     a=np.empty([len(pep), 1])
     if 'aap' in featurelist:
-        aapdic = readAAP("./aap/"+aap_file)
+        #aapdic = readAAP("./aap/"+aap_file)
         f_aap = np.array([aap(pep, aapdic, 1)]).T
         a = np.column_stack((a,f_aap))
         #print(f_aap)
     if 'aat' in featurelist:
-        aatdic = readAAT("./aat/"+aat_file)
+        #aatdic = readAAT("./aat/"+aat_file)
         f_aat = np.array([aat(pep, aatdic, 1)]).T
         a = np.column_stack((a, f_aat))
         #print(f_aat)
@@ -458,14 +458,14 @@ def test(training_data, x_test, y_test):
     print (model.score(features, y_test))
 
 
-def scoremodel(file, mlfile, aap_file, aat_file, length):
+def scoremodel(file, mlfile, length):
     sequences, maxname, maxlen = readseq(file, length)
     pep, peploc, seqid = createpeptides(sequences, length, maxname, maxlen)
     training_data= readmodel(mlfile)
     #print(training_data.keys())
     print ("Calculating the",training_data['featurelist'],"features for the peptides. \n")
     #print(*training_data['featurelist'], sep=",")
-    features = combinefeature(pep, training_data['featurelist'], training_data['vocab'], aap_file, aat_file)
+    features = combinefeature(pep, training_data['featurelist'], training_data['vocab'],training_data['aap'],training_data['aat'])
     print("\nFeature calculation complete!\n")
     print("=================================================================\n")
     '''newdata = open('abcpred-20.txt', 'r')
