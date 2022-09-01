@@ -86,6 +86,6 @@ If you use EpitopeVec for your work, please cite as:
 
 ## Contact<a name="contact"></a>
 - Open an [issue](https://github.com/hzi-bifo/epitope-prediction/issues) in the repository.
-- Send an email to Akash Bahai (akash.bahai@helmholtz-hzi.de).
+- Send an email to Akash Bahai (akashbahai@gmail.com).
 
 
