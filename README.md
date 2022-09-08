@@ -19,13 +19,13 @@ The code for training new models and results from the EpitopVec article are avai
 ## Requirements<a name="requirements"></a>
 
 * **```Python 3```** with the following packages:
-    * **numpy 1.18.5**
-    * **scipy 1.5.0**
-    * **matplotlib 3.2.2**
-    * **scikit-learn 0.23.2**
+    * **numpy 1.17.1**
+    * **scipy 1.4.1**
+    * **matplotlib 3.1.3**
+    * **sklearn 0.22.1**
     * **pydpi 1.0**
-    * **biopython 1.77**
-    * **tqdm 4.47.0**
+    * **biopython 1.71.0**
+    * **tqdm 4.15.0**
     * **gensim 3.8.3**
     
    
