@@ -62,6 +62,9 @@ if __name__ == "__main__":
     if model.strip() == "viral":
         print("\nPredictions will be made using viral model \n")
         model = 'svm-viral.pickle'
+    if model.strip() == "bacterial":
+        print("\nPredictions will be made using bacterial model \n")
+        model = 'svm-bacterial.pickle'
 
     if os.path.isfile('./protvec/sp_sequences_4mers_vec.bin') == False:
         error("Error. Protvec binary file is missing in the protvec folder. See README file")
