@@ -13,7 +13,7 @@
 
 
 ## EpitopeVec<a name="introduction"></a>
-EpitopeVec predicts linear B-cell epitopes. It takes protein sequences (FASTA format) as input and then lists the peptides (of a given amino acids length) that can be epitopes along with their respective prediction probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, amino acid pair propensity scale, amino acid trimer propensity scale, and distributed vector representation of proteins (ProtVec).
+EpitopeVec predicts linear B-cell epitopes. It takes protein sequences (FASTA format) as input and then lists the peptides (of a given amino acid length) that can be epitopes along with their respective prediction probability. It is based on a SVM model trained on a large set of experimentally verified epitopes and makes use of different amino acid features, amino acid pair propensity scale, amino acid trimer propensity scale, and distributed vector representation of proteins (ProtVec).
 The code for training new models and results from the EpitopVec article are available at https://github.com/hzi-bifo/epitope-prediction-paper  
 
 ## Requirements<a name="requirements"></a>
@@ -43,10 +43,9 @@ The code for training new models and results from the EpitopVec article are avai
  
  ```
  cd protvec
- wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.txt
- wget http://deepbio.info/embedding_repo/sp_sequences_4mers_vec.bin
+ wget https://research.bifo.helmholtz-hzi.de/downloads/epitopevec/sp_sequences_4mers_vec.bin
  ```
-<mark>The link to the protvec binary files are broken temporarily. Please download the file (only the .bin file is required) from [here.](https://drive.google.com/file/d/18QxzWTpHge03k7DU0MNS8aCfHqmuzmFh/view)</mark>
+<mark>If the link to the protvec binary file is broken or the download is too slow, please download the file (only the .bin file is required) from [here](https://drive.google.com/file/d/18QxzWTpHge03k7DU0MNS8aCfHqmuzmFh/view) and place it in the ```protvec``` directory.</mark>
  
    
 ## Usage<a name="usage"></a>
