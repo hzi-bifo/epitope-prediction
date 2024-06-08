@@ -69,6 +69,8 @@ The code for training new models and results from the EpitopVec article are avai
      -l, --length : Length of the peptides to be calculated from the sequence. Should be an integer >=4. For best results use peptide length = 20(default).
      -c, --cutoff : cut-off score (default = 0.5) for a peptide to be considered an epitope. Should be a number between 0 and 1.
   ```
+* If you encounter a compatibility issue in sequencelist_representation.py related to KeyedVectors, you can fix it by going to /your_path/python3.7/site-packages/gensim/models/ldamodel.py. On line 57, replace ```from scipy.misc``` with ```from scipy.special```
+
 ## Input<a name="input"></a>
   The program takes a file with protein sequences as input. The input file should be in **FASTA** file format and should only use the 20 aa codes. The fasta file can contain  a single or multiple protein sequences. If any sequence contains an invalid aa code or the length of the sequence is <4, then that sequence will be skipped while making predictions. Also, if the length of the sequence is < specified peptide length ```-l length```, then the prediction will be made on the entire sequence.     
  Please put the input file in the ```input``` folder or enter the full path of the inputfile. Please take a look in the ```input``` folder to see an example of input fasta file: ```example.fasta``` 
